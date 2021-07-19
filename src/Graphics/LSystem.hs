@@ -2,12 +2,15 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards   #-}
 
-module Lib ( generate
-           , Variable(..)
-           , example1
-           , defaultSettings
-           , applyL
-           ) where
+module Graphics.LSystem ( generate
+                        , Variable(..)
+                        , Item(..)
+                        , Rule(..)
+                        , Settings
+                        , LSystem
+                        , defaultSettings
+                        , applyL
+                        ) where
 
 import           Draw         (Settings (..), draw)
 import           Graphics.Svg (Element)
@@ -42,11 +45,23 @@ example1 = LSystem { axiom = [ Variable F, RotL, char 'X', Variable F, RotL, Var
                          ] ]
                    }
 
+
+-- axiom = F+F+F+F
+-- F -> FF+F++F+F
+-- angle = 90
+example2 :: LSystem
+example2 = LSystem { axiom = [ Variable F, RotL, Variable F, RotL, Variable F, RotL, Variable F ]
+                   , rules = [
+                         Rule F [
+                               Variable F, Variable F, RotL, Variable F, RotL, RotL, Variable F, RotL, Variable F
+                         ] ]
+                   }
+
 defaultSettings :: Settings
-defaultSettings = Settings { start       = (1000, 500)
+defaultSettings = Settings { start       = (1000, 100)
                            , size        = (1000, 1000)
-                           , line_length = 10
-                           , line_width  = 5
+                           , line_length = 2
+                           , line_width  = 0.5
                            , line_mult   = 1.5
                            , by_angle    = pi / 2
                            }

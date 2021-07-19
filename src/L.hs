@@ -14,7 +14,8 @@ module L ( Variable(..)
          , applyOne
          ) where
 
-import           Data.Text
+import           Data.List  (find)
+import           Data.Maybe (maybe)
 
 data Variable = Char Char
               | F
@@ -34,15 +35,18 @@ data Item = RotL
 data Rule = Rule Variable [Item] deriving (Show, Eq)
 
 applyOne :: [Rule] -> Variable -> [Item]
-applyOne [] var                          = [Variable var]
-applyOne ((Rule v it):rs) var | v == var = it
-applyOne ((Rule v it):rs) var            = applyOne rs var
+applyOne rules var = maybe
+                       [Variable var]
+                       (\(Rule _ it) -> it)
+                       (find (\(Rule v _) -> (v == var)) rules)
 
 
 applyRules :: [Rule] -> [Item] -> [Item]
-applyRules rules []              = []
-applyRules rules (Variable v:xs) = (applyOne rules v) ++ (applyRules rules xs)
-applyRules rules (x:xs)          = [x] ++ (applyRules rules xs)
+applyRules rules arr = concat $ map (\x ->
+                                       case x of
+                                         Variable v -> applyOne rules v
+                                         _          -> [x]
+                                    ) arr
 
 apply :: Int -> [Rule] -> [Item] -> [Item]
 apply 0 _ x = x
